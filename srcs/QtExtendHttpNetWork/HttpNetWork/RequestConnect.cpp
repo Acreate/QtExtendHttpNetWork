@@ -2,7 +2,9 @@
 #include "Request.h"
 using namespace cylHttpNetWork;
 #include "NetworkAccessManager.h"
-RequestConnect::RequestConnect( QObject *parent ): QObject( parent ), networkAccessManager( nullptr ), networkReply( nullptr ) {
+RequestConnect::RequestConnect( QObject *parent ): QObject( parent )
+, networkAccessManager( nullptr )
+, networkReply( nullptr ) {
 }
 RequestConnect::~RequestConnect( ) {
 
@@ -23,14 +25,6 @@ void RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAcces
 		this, &RequestConnect::networkAccessManagerProxyAuthenticationRequired, connect_type );
 	connect( networkAccessManager, &QNetworkAccessManager::sslErrors,
 		this, &RequestConnect::networkAccessManagerSslErrors, connect_type );
-
-	auto overload = QOverload< QObject * >::of( &QObject::destroyed );
-	// 对象被删除
-	connect( networkAccessManager, overload, [=]( QObject *obj ) {
-		if( networkAccessManager == obj )
-			this->networkAccessManager = nullptr;
-		qDebug( ) << __FILE__ << " : " << __LINE__ << "\n\t""networkAccessManager, overload, [=]( QObject *" << obj << " )";
-	} );
 }
 void RequestConnect::setNetworkReply( QNetworkReply *const networkReply, Qt::ConnectionType connect_type ) {
 	if( this->networkReply == networkReply )
@@ -73,9 +67,4 @@ void RequestConnect::setNetworkReply( QNetworkReply *const networkReply, Qt::Con
 	connect( networkReply, &QNetworkReply::downloadProgress,
 		this, &RequestConnect::networkReplyDownloadProgress,
 		connect_type );
-	auto overload = QOverload< QObject * >::of( &QObject::destroyed );
-	// 对象被删除
-	connect( networkReply, overload, [=]( QObject *obj ) {
-		qDebug( ) << __FILE__ << " : " << __LINE__ << "\n\t" "networkReply, overload, [=]( QObject *" << obj << " )";
-	} );
 }
