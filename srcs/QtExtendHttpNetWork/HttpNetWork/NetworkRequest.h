@@ -10,6 +10,7 @@ namespace cylHttpNetWork {
 		virtual ~NetworkRequest( );
 	private:  // 静态-成员
 		static QStringList userAgentHeaders; // 包含所有的 User Agent
+		static void init( );
 	public: // 静态-功能性
 		static QStringList getUserAgentHeaders( );
 		static QString getRandomUserAgentHeader( );

@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QSettings>
 #include <QNetworkReply>
-
 #include "../nameSpace/httpNetWork.h"
 namespace cylHttpNetWork {
 
@@ -19,9 +18,17 @@ namespace cylHttpNetWork {
 		Request( NetworkAccessManager *networkAccessManager, RequestConnect *requestConnect, QObject *parent, Qt::ConnectionType connection_type = Qt::AutoConnection );
 		~Request( ) override;
 	public:
-		QNetworkReply * netGetWork( const QUrl &url, std::chrono::microseconds microseconds = std::chrono::microseconds( 0 ), Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, std::chrono::microseconds microseconds = std::chrono::microseconds( 0 ), Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( NetworkRequest &network_request, std::chrono::microseconds microseconds = std::chrono::microseconds( 0 ), Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( const QUrl &url, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
+
+		QNetworkReply * netGetWork( const QUrl &url, std::chrono::microseconds microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, std::chrono::microseconds microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( NetworkRequest &network_request, std::chrono::microseconds microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+
+		QNetworkReply * netGetWork( const QUrl &url, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		QNetworkReply * netGetWork( NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
 
 	};
 
