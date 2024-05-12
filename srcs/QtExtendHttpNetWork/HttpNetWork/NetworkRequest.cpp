@@ -4,8 +4,13 @@ using namespace cylHttpNetWork;
 QStringList NetworkRequest::userAgentHeaders;
 size_t NetworkRequest::defaultHostRequestIntervalMilliseconds;
 QMap< QUrl, size_t > NetworkRequest::hostRequestInterval;
-void NetworkRequest::init( ) {
+QMutex *NetworkRequest::mutex = nullptr;
+QMap< QUrl, NetworkRequest::Time_Duration > NetworkRequest::urlTimeMap;
+void NetworkRequest::initTools( ) {
+	if( mutex )
+		return;
 	srand( time( 0 ) );
+	mutex = new QMutex;
 	NetworkRequest::userAgentHeaders = {
 		QObject::tr( u8"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36" )
 		, QObject::tr( u8"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36" )
@@ -20,10 +25,13 @@ void NetworkRequest::init( ) {
 	hostRequestInterval.clear( );
 }
 void NetworkRequest::setHostUrlRequestInterval( const QUrl &q_url, const size_t &milliseconds ) {
+	mutex->lock( );
 	hostRequestInterval.insert( q_url, milliseconds );
+	mutex->unlock( );
 }
 
 size_t NetworkRequest::getHostUrlRequestInterval( const QUrl &q_url ) {
+	QMutexLocker< QMutex > locker( mutex );
 	auto iterator = hostRequestInterval.begin( );
 	auto end = hostRequestInterval.end( );
 	auto host = q_url.host( );
@@ -32,9 +40,40 @@ size_t NetworkRequest::getHostUrlRequestInterval( const QUrl &q_url ) {
 			return iterator.value( );
 	return defaultHostRequestIntervalMilliseconds;
 }
+NetworkRequest::Time_Duration NetworkRequest::getNowTimeDuration( ) {
+	return std::chrono::system_clock::now( ).time_since_epoch( );
+}
+long long NetworkRequest::getTimeDurationToMilliseconds( const NetworkRequest::Time_Duration &time_duration ) {
+	return std::chrono::duration_cast< std::chrono::milliseconds >( time_duration ).count( );
+}
+bool NetworkRequest::getHostLastRequestTime( const QUrl &q_url, NetworkRequest::Time_Duration &result ) {
+	QMutexLocker< QMutex > locker( mutex );
+	auto iterator = urlTimeMap.begin( );
+	auto end = urlTimeMap.end( );
+	for( ; iterator != end; ++iterator )
+		if( iterator.key( ).host( ) == q_url.host( ) ) {
+			result = iterator.value( );
+			return true;
+		}
+	return false;
+}
+void NetworkRequest::setHostLastRequestTime( const QUrl &q_url, const Time_Duration &time_duration ) {
+	QMutexLocker< QMutex > locker( mutex );
+	auto iterator = urlTimeMap.begin( );
+	auto end = urlTimeMap.end( );
+	for( ; iterator != end; ++iterator )
+		if( iterator.key( ).host( ) == q_url.host( ) ) {
+			iterator.value( ) = time_duration;
+			return;
+		}
+	urlTimeMap.insert( q_url, time_duration );
+}
+void NetworkRequest::updateCurrentTimeToHostLastRequestTime( const QUrl &q_url ) {
+	setHostLastRequestTime( q_url, std::chrono::system_clock::now( ).time_since_epoch( ) );
+}
 NetworkRequest::NetworkRequest( ) {
 	if( userAgentHeaders.size( ) == 0 )
-		init( );
+		initTools( );
 }
 NetworkRequest::~NetworkRequest( ) {
 }

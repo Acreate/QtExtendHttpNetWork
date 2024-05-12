@@ -9,9 +9,9 @@ RequestConnect::RequestConnect( QObject *parent ): QObject( parent )
 RequestConnect::~RequestConnect( ) {
 
 }
-void RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAccessManager, Qt::ConnectionType connect_type ) {
-	if( this->networkAccessManager == networkAccessManager )
-		return;
+bool RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAccessManager, Qt::ConnectionType connect_type ) {
+	if( this->networkAccessManager )
+		return false;
 	this->networkAccessManager = networkAccessManager;
 	connect( networkAccessManager, &QNetworkAccessManager::authenticationRequired,
 		this, &RequestConnect::networkAccessManagerAuthenticationRequired, connect_type );
@@ -25,10 +25,11 @@ void RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAcces
 		this, &RequestConnect::networkAccessManagerProxyAuthenticationRequired, connect_type );
 	connect( networkAccessManager, &QNetworkAccessManager::sslErrors,
 		this, &RequestConnect::networkAccessManagerSslErrors, connect_type );
+	return true;
 }
-void RequestConnect::setNetworkReply( QNetworkReply *const networkReply, Qt::ConnectionType connect_type ) {
-	if( this->networkReply == networkReply )
-		return;
+bool RequestConnect::setNetworkReply( QNetworkReply *const networkReply, Qt::ConnectionType connect_type ) {
+	if( this->networkReply )
+		return false;
 	this->networkReply = networkReply;
 	connect( this, &RequestConnect::networkReplyMetaDataFinished, [=]( ) {
 		emit networkReplyFinished( this );
@@ -67,4 +68,5 @@ void RequestConnect::setNetworkReply( QNetworkReply *const networkReply, Qt::Con
 	connect( networkReply, &QNetworkReply::downloadProgress,
 		this, &RequestConnect::networkReplyDownloadProgress,
 		connect_type );
+	return true;
 }

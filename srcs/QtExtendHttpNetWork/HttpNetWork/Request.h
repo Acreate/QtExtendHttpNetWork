@@ -10,7 +10,6 @@ namespace cylHttpNetWork {
 	class QTEXTENDHTTPNETWORK_EXPORT Request : public QObject {
 		Q_OBJECT;
 	private:
-		QSettings *setting = nullptr;
 		NetworkAccessManager *networkAccessManager;
 		RequestConnect *requestConnect;
 	public:
@@ -18,20 +17,62 @@ namespace cylHttpNetWork {
 		Request( NetworkAccessManager *networkAccessManager, RequestConnect *requestConnect, QObject *parent, Qt::ConnectionType connection_type = Qt::AutoConnection );
 		~Request( ) override;
 	public:
+		/// <summary>
+		/// 发送 get 请求
+		/// </summary>
+		/// <param name="url">请求的 rul</param>
+		/// <param name="connect_type">信号链接类型</param>
+		/// <returns>响应对象</returns>
 		QNetworkReply * netGetWork( const QUrl &url, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
-
+		/// <summary>
+		/// 使用模板发送 get 请求，请求 url 来自参数 url，并非模板 network_request
+		/// </summary>
+		/// <param name="url">请求的 rul</param>
+		/// <param name="network_request">模板</param>
+		/// <param name="connect_type">信号链接类型</param>
+		/// <returns>响应对象</returns>
+		QNetworkReply * netGetWork( const QUrl &url, const NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		/// <summary>
+		/// 使用模板发送 get 请求，请求 url 来自 network_request 模板
+		/// </summary>
+		/// <param name="network_request">模板</param>
+		/// <param name="connect_type">信号链接类型</param>
+		/// <returns>响应对象</returns>
+		QNetworkReply * netGetWork( const NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		/// <summary>
+		/// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒
+		/// </summary>
+		/// <param name="url">请求地址</param>
+		/// <param name="microseconds">等待毫秒</param>
+		/// <param name="connect_type">信号链接类型</param>
+		/// <returns>响应对象</returns>
 		QNetworkReply * netGetWork( const QUrl &url, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		/// <summary>
+		/// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒<br/>
+		/// 使用的请求模板来自 network_request，链接来自参数 url
+		/// </summary>
+		/// <param name="url">请求地址</param>
+		/// <param name="network_request">请求模板</param>
+		/// <param name="microseconds">等待毫秒</param>
+		/// <param name="connect_type">信号链接类型</param>
+		/// <returns>响应对象</returns>
+		QNetworkReply * netGetWork( const QUrl &url, const NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		/// <summary>
+		/// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒<br/>
+		/// 使用的请求链接来自 network_request 对象
+		/// </summary>
+		/// <param name="network_request">请求模板</param>
+		/// <param name="microseconds">等待毫秒</param>
+		/// <param name="connect_type">信号链接类型</param>
+		/// <returns>响应对象</returns>
+		QNetworkReply * netGetWork(const NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
 	public: // - 静态对象
 		/// <summary>
 		/// 睡眠指定的时间-毫秒
 		/// </summary>
 		/// <param name="milliseconds">毫秒</param>
 		/// <returns>毫秒</returns>
-		static size_t sleep(const size_t &milliseconds);
+		static size_t sleep( const size_t &milliseconds );
 	};
 
 }

@@ -24,9 +24,20 @@ namespace cylHttpNetWork {
 		QNetworkReply * getNetworkReply( ) const {
 			return networkReply;
 		}
-
-		void setNetworkAccessManager( NetworkAccessManager *request, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		void setNetworkReply( QNetworkReply *networkReply, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		/// <summary>
+		/// 设置 NetworkAccessManager 对象转发体
+		/// </summary>
+		/// <param name="request">转发对象</param>
+		/// <param name="connect_type">信号槽链接类型</param>
+		/// <returns>失败返回 false</returns>
+		bool setNetworkAccessManager( NetworkAccessManager *request, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		/// <summary>
+		/// 设置 QNetworkReply 对象转发体
+		/// </summary>
+		/// <param name="networkReply">转发对象</param>
+		/// <param name="connect_type">信号槽链接类型</param>
+		/// <returns>失败返回 false</returns>
+		bool setNetworkReply( QNetworkReply *networkReply, Qt::ConnectionType connect_type = Qt::AutoConnection );
 	Q_SIGNALS: //  QNetworkAccessManager 转发
 		void networkAccessManagerAuthenticationRequired( QNetworkReply *reply, QAuthenticator *authenticator );
 		void networkAccessManagerEncrypted( QNetworkReply *reply );
