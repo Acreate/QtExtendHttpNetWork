@@ -97,7 +97,7 @@ int32_t Request::netGetWork( const NetworkRequest &network_request, Qt::Connecti
 	}
 
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
-	if( requestConnect->setNetworkReply( networkReply, connect_type ) )
+	if( !requestConnect->setNetworkReply( networkReply, connect_type ) )
 		return -2;
 	cylHttpNetWork::NetworkRequest::updateCurrentTimeToHostLastRequestTime( qUrl );
 	return 0;

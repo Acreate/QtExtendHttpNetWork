@@ -102,8 +102,11 @@ int main( int argc, char *argv[ ] ) {
 显示:
 
 ```
-over :  -963     cylHttpNetWork::Request(0x2a7954a1340)
-over :  -20013   cylHttpNetWork::Request(0x2a797577d20)
+run code :  0
+over :  -6011    cylHttpNetWork::Request(0x1fa5d94efb0)
+run code :  0
+over :  -15260   cylHttpNetWork::Request(0x1fa5f9a8ed0)
+run code :  -2
 
 
 
@@ -111,7 +114,7 @@ over :  -20013   cylHttpNetWork::Request(0x2a797577d20)
 =============
  int main( int argc, char *argv[ ] )
 return app.exec( );
-over :  -13003   cylHttpNetWork::Request(0x2a797597060)
+over :  -8274    cylHttpNetWork::Request(0x1fa5f9a8c90)
 
 ```
 
@@ -205,15 +208,18 @@ static QString getRandomUserAgentHeader( );
 使用 Request::netGetWork 可以实现 get 请求。
 
 ```c++
+
 /// <summary>
-/// 发送 get 请求
+/// 发送 get 请求<br/>
+/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果
 /// </summary>
 /// <param name="url">请求的 rul</param>
 /// <param name="connect_type">信号链接类型</param>
 /// <returns>执行编码，非0表示失败</returns>
 int32_t netGetWork( const QUrl &url, Qt::ConnectionType connect_type = Qt::AutoConnection );
 /// <summary>
-/// 使用模板发送 get 请求，请求 url 来自参数 url，并非模板 network_request
+/// 使用模板发送 get 请求，请求 url 来自参数 url，并非模板 network_request<br/>
+/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果
 /// </summary>
 /// <param name="url">请求的 rul</param>
 /// <param name="network_request">模板</param>
@@ -221,14 +227,16 @@ int32_t netGetWork( const QUrl &url, Qt::ConnectionType connect_type = Qt::AutoC
 /// <returns>执行编码，非0表示失败</returns>
 int32_t netGetWork( const QUrl &url, const NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
 /// <summary>
-/// 使用模板发送 get 请求，请求 url 来自 network_request 模板
+/// 使用模板发送 get 请求，请求 url 来自 network_request 模板<br/>
+/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果
 /// </summary>
 /// <param name="network_request">模板</param>
 /// <param name="connect_type">信号链接类型</param>
 /// <returns>执行编码，非0表示失败</returns>
 int32_t netGetWork( const NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
 /// <summary>
-/// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒
+/// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒<br/>
+/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果
 /// </summary>
 /// <param name="url">请求地址</param>
 /// <param name="microseconds">等待毫秒</param>
@@ -237,7 +245,8 @@ int32_t netGetWork( const NetworkRequest &network_request, Qt::ConnectionType co
 int32_t netGetWork( const QUrl &url, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
 /// <summary>
 /// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒<br/>
-/// 使用的请求模板来自 network_request，链接来自参数 url
+/// 使用的请求模板来自 network_request，链接来自参数 url<br/>
+/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果
 /// </summary>
 /// <param name="url">请求地址</param>
 /// <param name="network_request">请求模板</param>
@@ -247,7 +256,8 @@ int32_t netGetWork( const QUrl &url, size_t microseconds, Qt::ConnectionType con
 int32_t netGetWork( const QUrl &url, const NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
 /// <summary>
 /// 使用模板发送 get 请求，并且等待时间 microseconds 毫秒<br/>
-/// 使用的请求链接来自 network_request 对象
+/// 使用的请求链接来自 network_request 对象<br/>
+/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果
 /// </summary>
 /// <param name="network_request">请求模板</param>
 /// <param name="microseconds">等待毫秒</param>
@@ -259,12 +269,12 @@ int32_t netGetWork(const NetworkRequest &network_request, size_t microseconds, Q
 #### 睡眠工具
 
 ```c++
-		/// <summary>
-		/// 睡眠指定的时间-毫秒
-		/// </summary>
-		/// <param name="milliseconds">毫秒</param>
-		/// <returns>毫秒</returns>
-		static size_t sleep( const size_t &milliseconds );
+/// <summary>
+/// 睡眠指定的时间-毫秒
+/// </summary>
+/// <param name="milliseconds">毫秒</param>
+/// <returns>毫秒</returns>
+static size_t sleep( const size_t &milliseconds );
 ```
 
 ### RequestConnect
@@ -274,20 +284,20 @@ int32_t netGetWork(const NetworkRequest &network_request, size_t microseconds, Q
 NetworkAccessManager 与 QNetworkReply 各配置一次
 
 ```c++
-	/// <summary>
-	/// 设置 NetworkAccessManager 对象转发体
-	/// </summary>
-	/// <param name="request">转发对象</param>
-	/// <param name="connect_type">信号槽链接类型</param>
-	/// <returns>失败返回 false</returns>
-	bool setNetworkAccessManager( NetworkAccessManager *request, Qt::ConnectionType connect_type = Qt::AutoConnection );
-	/// <summary>
-	/// 设置 QNetworkReply 对象转发体
-	/// </summary>
-	/// <param name="networkReply">转发对象</param>
-	/// <param name="connect_type">信号槽链接类型</param>
-	/// <returns>失败返回 false</returns>
-	bool setNetworkReply( QNetworkReply *networkReply, Qt::ConnectionType connect_type = Qt::AutoConnection );
+/// <summary>
+/// 设置 NetworkAccessManager 对象转发体
+/// </summary>
+/// <param name="request">转发对象</param>
+/// <param name="connect_type">信号槽链接类型</param>
+/// <returns>失败返回 false</returns>
+bool setNetworkAccessManager( NetworkAccessManager *request, Qt::ConnectionType connect_type = Qt::AutoConnection );
+/// <summary>
+/// 设置 QNetworkReply 对象转发体
+/// </summary>
+/// <param name="networkReply">转发对象</param>
+/// <param name="connect_type">信号槽链接类型</param>
+/// <returns>失败返回 false</returns>
+bool setNetworkReply( QNetworkReply *networkReply, Qt::ConnectionType connect_type = Qt::AutoConnection );
 ```
 
 实现自 QObject

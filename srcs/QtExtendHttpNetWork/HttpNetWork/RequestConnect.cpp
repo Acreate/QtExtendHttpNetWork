@@ -11,7 +11,10 @@ RequestConnect::~RequestConnect( ) {
 }
 bool RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAccessManager, Qt::ConnectionType connect_type ) {
 	if( this->networkAccessManager )
-		return false;
+		if( this->networkAccessManager == networkAccessManager )
+			return true;
+		else
+			return false;
 	this->networkAccessManager = networkAccessManager;
 	connect( networkAccessManager, &QNetworkAccessManager::authenticationRequired,
 		this, &RequestConnect::networkAccessManagerAuthenticationRequired, connect_type );
@@ -27,9 +30,13 @@ bool RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAcces
 		this, &RequestConnect::networkAccessManagerSslErrors, connect_type );
 	return true;
 }
-bool RequestConnect::setNetworkReply( QNetworkReply *const networkReply, Qt::ConnectionType connect_type ) {
+bool RequestConnect::setNetworkReply( QNetworkReply *networkReply, Qt::ConnectionType connect_type ) {
 	if( this->networkReply )
-		return false;
+		if( this->networkReply == networkReply )
+			return true;
+		else
+			return false;
+
 	this->networkReply = networkReply;
 	connect( this, &RequestConnect::networkReplyMetaDataFinished, [=]( ) {
 		emit networkReplyFinished( this );

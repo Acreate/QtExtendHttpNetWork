@@ -11,6 +11,8 @@ namespace cylHttpNetWork {
 
 	class QTEXTENDHTTPNETWORK_EXPORT RequestConnect : public QObject {
 		Q_OBJECT;
+	public:
+		friend class Request;
 	private:
 		NetworkAccessManager *networkAccessManager;
 		QNetworkReply *networkReply;
@@ -24,6 +26,7 @@ namespace cylHttpNetWork {
 		QNetworkReply * getNetworkReply( ) const {
 			return networkReply;
 		}
+	private:
 		/// <summary>
 		/// 设置 NetworkAccessManager 对象转发体
 		/// </summary>

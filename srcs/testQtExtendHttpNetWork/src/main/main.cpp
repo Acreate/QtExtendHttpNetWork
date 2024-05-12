@@ -19,7 +19,8 @@ void testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QU
 		request->deleteLater( );
 	} );
 	// 开始请求
-	request->netGetWork( qUrl );
+	int32_t netGetWorkResultCode = request->netGetWork( qUrl );
+	qDebug() << "run code : "  << netGetWorkResultCode;
 }
 void testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QUrl qUrl, size_t mill ) {
 	// 请求信号转发对象
@@ -36,7 +37,8 @@ void testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QU
 		request->deleteLater( );
 	} );
 	// 开始请求，但是使用自定义的时间，而并非已经定义的时间间隔
-	request->netGetWork( qUrl, mill );
+	int32_t netGetWorkResultCode = request->netGetWork( qUrl , mill);
+	qDebug() << "run code : "  << netGetWorkResultCode;
 }
 int main( int argc, char *argv[ ] ) {
 	QApplication app( argc, argv );
