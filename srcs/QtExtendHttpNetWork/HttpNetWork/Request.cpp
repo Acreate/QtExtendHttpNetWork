@@ -41,28 +41,29 @@ Request::Request( NetworkAccessManager *networkAccessManager, RequestConnect *re
 Request::~Request( ) {
 }
 
-QNetworkReply * Request::netGetWork( const QUrl &url, size_t milliseconds, Qt::ConnectionType connect_type ) {
+int32_t Request::netGetWork( const QUrl &url, size_t milliseconds, Qt::ConnectionType connect_type ) {
 	NetworkRequest request;
 	request.setUrl( url );
 	return netGetWork( request, milliseconds, connect_type );
 }
-QNetworkReply * Request::netGetWork( const QUrl &url, const NetworkRequest &network_request, size_t milliseconds, Qt::ConnectionType connect_type ) {
+int32_t Request::netGetWork( const QUrl &url, const NetworkRequest &network_request, size_t milliseconds, Qt::ConnectionType connect_type ) {
 	NetworkRequest request = network_request;
 	request.setUrl( url );
 	return this->netGetWork( request, milliseconds, connect_type );
 }
-QNetworkReply * Request::netGetWork( const QUrl &url, Qt::ConnectionType connect_type ) {
+int32_t Request::netGetWork( const QUrl &url, Qt::ConnectionType connect_type ) {
 	NetworkRequest request;
 	request.setUrl( url );
 	return netGetWork( request, connect_type );
 }
-QNetworkReply * Request::netGetWork( const QUrl &url, const NetworkRequest &network_request, Qt::ConnectionType connect_type ) {
+int32_t Request::netGetWork( const QUrl &url, const NetworkRequest &network_request, Qt::ConnectionType connect_type ) {
 	NetworkRequest networkRequest = network_request;
 	networkRequest.setUrl( url );
 	return netGetWork( networkRequest, connect_type );
 }
-QNetworkReply * Request::netGetWork( const NetworkRequest &network_request, size_t milliseconds, Qt::ConnectionType connect_type ) {
-	requestConnect->setNetworkAccessManager( networkAccessManager, connect_type );
+int32_t Request::netGetWork( const NetworkRequest &network_request, size_t milliseconds, Qt::ConnectionType connect_type ) {
+	if( !requestConnect->setNetworkAccessManager( networkAccessManager, connect_type ) )
+		return -1;
 	// 上次请求的时间
 	NetworkRequest::Time_Duration timeDuration;
 	auto qUrl = network_request.url( );
@@ -74,12 +75,14 @@ QNetworkReply * Request::netGetWork( const NetworkRequest &network_request, size
 			sleep( milliseconds - timeDurationToMilliseconds );
 	}
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
-	requestConnect->setNetworkReply( networkReply, connect_type );
+	if( requestConnect->setNetworkReply( networkReply, connect_type ) )
+		return -2;
 	cylHttpNetWork::NetworkRequest::updateCurrentTimeToHostLastRequestTime( qUrl );
-	return networkReply;
+	return 0;
 }
-QNetworkReply * Request::netGetWork( const NetworkRequest &network_request, Qt::ConnectionType connect_type ) {
-	requestConnect->setNetworkAccessManager( networkAccessManager, connect_type );
+int32_t Request::netGetWork( const NetworkRequest &network_request, Qt::ConnectionType connect_type ) {
+	if( !requestConnect->setNetworkAccessManager( networkAccessManager, connect_type ) )
+		return -1;
 	// 上次请求的时间
 	NetworkRequest::Time_Duration timeDuration;
 
@@ -94,7 +97,8 @@ QNetworkReply * Request::netGetWork( const NetworkRequest &network_request, Qt::
 	}
 
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
-	requestConnect->setNetworkReply( networkReply, connect_type );
+	if( requestConnect->setNetworkReply( networkReply, connect_type ) )
+		return -2;
 	cylHttpNetWork::NetworkRequest::updateCurrentTimeToHostLastRequestTime( qUrl );
-	return networkReply;
+	return 0;
 }
