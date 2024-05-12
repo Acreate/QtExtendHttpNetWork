@@ -4,28 +4,27 @@
 #include <HttpNetWork/Request.h>
 #include <HttpNetWork/RequestConnect.h>
 
-#include "NetWorkThread/HttpGetRequestThread.h"
 int main( int argc, char *argv[ ] ) {
 	QApplication app( argc, argv );
-	QNetworkAccessManager qNetworkAccessManager;
+	cylHttpNetWork::NetworkAccessManager networkAccessManager;
 
-	QNetworkAccessManager::connect( &qNetworkAccessManager, &QNetworkAccessManager::finished, []( QNetworkReply *reply ) {
-		reply->seek( 0 );
-		QString msg( reply->readAll( ) );
-		qDebug( ) << "\n\n\n\n=============\n" "&qNetworkAccessManager, &QNetworkAccessManager::finished";
-		qDebug( ) << msg << "\n\n\n\n=============\n";
+
+	cylHttpNetWork::NetworkRequest qNetworkRequest;
+	QUrl qUrl( "https://www.121ds.cc/" );
+	qNetworkRequest.setUrl( qUrl );
+	qNetworkRequest.setHeader( QNetworkRequest::UserAgentHeader, cylHttpNetWork::NetworkRequest::getRandomUserAgentHeader( ) );
+	cylHttpNetWork::NetworkRequest::init( );
+	cylHttpNetWork::NetworkRequest::setHostUrlRequestInterval( qUrl, 15000 );
+
+
+	cylHttpNetWork::RequestConnect requestConnect;
+	cylHttpNetWork::Request request( &networkAccessManager, &requestConnect );
+	QObject::connect( &requestConnect, &cylHttpNetWork::RequestConnect::networkReplyFinished, []( cylHttpNetWork::RequestConnect *request_connect ) {
+		qDebug( ) << "over";
 	} );
 
-	QNetworkRequest qNetworkRequest;
-	qNetworkRequest.setUrl( QUrl( "https://www.121ds.cc/" ) );
-	qNetworkRequest.setHeader( QNetworkRequest::UserAgentHeader, cylHttpNetWork::NetworkRequest::getRandomUserAgentHeader( ) );
-	QNetworkReply *networkReply = qNetworkAccessManager.get( qNetworkRequest );
-	bool isRunning = networkReply->isRunning( );
-	while( isRunning && !networkReply->isFinished( ) ) {
-		if( networkReply->error( ) )
-			break;
-		app.processEvents( );
-	}
+	request.netGetWork( qUrl, 12000 );
+
 	qDebug( ) << "\n\n\n\n=============\n" << "int main( int argc, char *argv[ ] ) ";
 	qDebug( ) << "return app.exec( );";
 	return app.exec( );

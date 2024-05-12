@@ -22,14 +22,16 @@ namespace cylHttpNetWork {
 		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
 		QNetworkReply * netGetWork( NetworkRequest &network_request, Qt::ConnectionType connect_type = Qt::AutoConnection );
 
-		QNetworkReply * netGetWork( const QUrl &url, std::chrono::microseconds microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, std::chrono::microseconds microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
-		QNetworkReply * netGetWork( NetworkRequest &network_request, std::chrono::microseconds microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
-
 		QNetworkReply * netGetWork( const QUrl &url, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
 		QNetworkReply * netGetWork( const QUrl &url, NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
 		QNetworkReply * netGetWork( NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
-
+	public: // - 静态对象
+		/// <summary>
+		/// 睡眠指定的时间-毫秒
+		/// </summary>
+		/// <param name="milliseconds">毫秒</param>
+		/// <returns>毫秒</returns>
+		static size_t sleep(const size_t &milliseconds);
 	};
 
 }

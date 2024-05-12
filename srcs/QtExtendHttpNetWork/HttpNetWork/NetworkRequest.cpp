@@ -2,6 +2,8 @@
 #include <QObject>
 using namespace cylHttpNetWork;
 QStringList NetworkRequest::userAgentHeaders;
+size_t NetworkRequest::defaultHostRequestIntervalMilliseconds;
+QMap< QUrl, size_t > NetworkRequest::hostRequestInterval;
 void NetworkRequest::init( ) {
 	srand( time( 0 ) );
 	NetworkRequest::userAgentHeaders = {
@@ -14,6 +16,21 @@ void NetworkRequest::init( ) {
 		, QObject::tr( u8"Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10.5; en-US; rv:1.9.2.15) Gecko/20110303 Firefox/3.6.15" )
 		, QObject::tr( u8"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36" )
 	};
+	defaultHostRequestIntervalMilliseconds = 2000;
+	hostRequestInterval.clear( );
+}
+void NetworkRequest::setHostUrlRequestInterval( const QUrl &q_url, const size_t &milliseconds ) {
+	hostRequestInterval.insert( q_url, milliseconds );
+}
+
+size_t NetworkRequest::getHostUrlRequestInterval( const QUrl &q_url ) {
+	auto iterator = hostRequestInterval.begin( );
+	auto end = hostRequestInterval.end( );
+	auto host = q_url.host( );
+	for( ; iterator != end; ++iterator )
+		if( host == iterator.key( ).host( ) )
+			return iterator.value( );
+	return defaultHostRequestIntervalMilliseconds;
 }
 NetworkRequest::NetworkRequest( ) {
 	if( userAgentHeaders.size( ) == 0 )
