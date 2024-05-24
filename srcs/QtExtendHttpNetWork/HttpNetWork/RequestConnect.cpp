@@ -15,6 +15,7 @@ bool RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAcces
 			return true;
 		else
 			return false;
+	this->connectType = connect_type;
 	this->networkAccessManager = networkAccessManager;
 	connect( networkAccessManager, &QNetworkAccessManager::authenticationRequired,
 		this, &RequestConnect::networkAccessManagerAuthenticationRequired, connect_type );

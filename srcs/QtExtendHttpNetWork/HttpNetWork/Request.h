@@ -14,11 +14,15 @@ namespace cylHttpNetWork {
 		NetworkAccessManager *networkAccessManager;
 		RequestConnect *requestConnect;
 		std::shared_ptr< NetworkRequest > networkRequest;
+		Qt::ConnectionType connectType;
 	public:
 		Request( NetworkAccessManager *networkAccessManager, RequestConnect *requestConnect, Qt::ConnectionType connection_type = Qt::AutoConnection );
 		Request( NetworkAccessManager *networkAccessManager, RequestConnect *requestConnect, QObject *parent, Qt::ConnectionType connection_type = Qt::AutoConnection );
 		~Request( ) override;
 	public:
+		RequestConnect * getRequestConnect( ) {
+			return requestConnect;
+		}
 		/// <summary>
 		/// 发送 get 请求<br/>
 		/// 返回 -2 时，你仍然可以使用 NetworkAccessManager 信号槽，但作为转发的 RequestConnect 将会失去效果

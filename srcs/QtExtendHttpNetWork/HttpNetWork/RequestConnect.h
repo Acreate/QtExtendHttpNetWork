@@ -16,6 +16,7 @@ namespace cylHttpNetWork {
 	private:
 		NetworkAccessManager *networkAccessManager;
 		QNetworkReply *networkReply;
+		Qt::ConnectionType connectType;
 	public:
 		RequestConnect( QObject *parent = nullptr );
 		~RequestConnect( ) override;
