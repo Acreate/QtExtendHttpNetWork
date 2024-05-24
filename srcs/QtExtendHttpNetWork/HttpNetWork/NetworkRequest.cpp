@@ -40,12 +40,8 @@ size_t NetworkRequest::getHostUrlRequestInterval( const QUrl &q_url ) {
 			return iterator.value( );
 	return defaultHostRequestIntervalMilliseconds;
 }
-NetworkRequest::Time_Duration NetworkRequest::getNowTimeDuration( ) {
-	return std::chrono::system_clock::now( ).time_since_epoch( );
-}
-long long NetworkRequest::getTimeDurationToMilliseconds( const NetworkRequest::Time_Duration &time_duration ) {
-	return std::chrono::duration_cast< std::chrono::milliseconds >( time_duration ).count( );
-}
+
+
 bool NetworkRequest::getHostLastRequestTime( const QUrl &q_url, NetworkRequest::Time_Duration &result ) {
 	QMutexLocker< QMutex > locker( mutex );
 	auto iterator = urlTimeMap.begin( );
@@ -68,9 +64,7 @@ void NetworkRequest::setHostLastRequestTime( const QUrl &q_url, const Time_Durat
 		}
 	urlTimeMap.insert( q_url, time_duration );
 }
-void NetworkRequest::updateCurrentTimeToHostLastRequestTime( const QUrl &q_url ) {
-	setHostLastRequestTime( q_url, std::chrono::system_clock::now( ).time_since_epoch( ) );
-}
+
 NetworkRequest::NetworkRequest( ) {
 	if( userAgentHeaders.size( ) == 0 )
 		initTools( );

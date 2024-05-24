@@ -12,16 +12,84 @@
 #include "NetworkRequest.h"
 using namespace cylHttpNetWork;
 
+QNetworkReply * Request::getNetworkReplyMilliseconds( size_t &request_milliseconds, const size_t &milliseconds ) {
+	QNetworkReply *networkReply = waitFinish( milliseconds );
+	if( networkReply->error( ) == QNetworkReply::NoError )
+		return networkReply; // 没有发生错误
+	QUrl qUrl = networkReply->url( );
+	// 获取当前时间
+	auto startGetNetworkReplyCallFunctionTime = NetworkRequest::getTimeDurationToMilliseconds( NetworkRequest::getNowTimeDuration( ) );
+	do {
+		if( networkReply->error( ) == QNetworkReply::NoError )
+			break; // 没有发生错误
+		// 当前时间减去上次请求时间，获得时间间隔
+		long long sepMillisecondsTime = NetworkRequest::getTimeDurationToMilliseconds( NetworkRequest::getNowTimeDuration( ) ) - startGetNetworkReplyCallFunctionTime;
+		if( sepMillisecondsTime > request_milliseconds )
+			break; // 间隔大于设置的时间，则退出请求
+		// 重新请求
+		auto newRequestConnect = new RequestConnect;
+		Request *request = new Request( this->networkAccessManager, newRequestConnect );
+		request->netGetWork( qUrl, *this->networkRequest );
+		// 阻塞，等待完成
+		networkReply = request->waitFinish( milliseconds );
+		request->deleteLater( );
+		newRequestConnect->deleteLater( );
+	} while( true );
+
+	return networkReply;
+}
+QNetworkReply * Request::getNetworkReply( size_t &request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds ) {
+	QNetworkReply *networkReply = waitFinish( milliseconds );
+	if( networkReply->error( ) == QNetworkReply::NoError )
+		return networkReply; // 没有发生错误
+	QUrl qUrl = networkReply->url( );
+	// 获取当前时间
+	auto startGetNetworkReplyCallFunctionTime = NetworkRequest::getTimeDurationToMilliseconds( NetworkRequest::getNowTimeDuration( ) );
+	while( repeatRequestCount != 0 && networkReply->error( ) != QNetworkReply::NoError ) {
+		// 当前时间减去上次请求时间，获得时间间隔
+		long long sepMillisecondsTime = NetworkRequest::getTimeDurationToMilliseconds( NetworkRequest::getNowTimeDuration( ) ) - startGetNetworkReplyCallFunctionTime;
+		if( sepMillisecondsTime > request_milliseconds )
+			break; // 间隔大于设置的时间，则退出请求
+		// 重新请求
+		auto newRequestConnect = new RequestConnect;
+		Request *request = new Request( this->networkAccessManager, newRequestConnect );
+		request->netGetWork( qUrl, *this->networkRequest );
+		// 阻塞，等待完成
+		networkReply = request->waitFinish( milliseconds );
+		request->deleteLater( );
+		newRequestConnect->deleteLater( );
+		--repeatRequestCount;
+	};
+
+	return networkReply;
+}
+QNetworkReply * Request::getNetworkReplyCount( size_t repeatRequestCount, const size_t &milliseconds ) {
+	QNetworkReply *networkReply = waitFinish( milliseconds );
+	while( repeatRequestCount != 0 && networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
+		auto newRequestConnect = new RequestConnect;
+		Request *request = new Request( this->networkAccessManager, newRequestConnect );
+		// 请求
+		request->netGetWork( networkReply->url( ), *this->networkRequest );
+		// 等待，阻塞
+		networkReply = request->waitFinish( milliseconds );
+		// 释放请求
+		request->deleteLater( );
+		newRequestConnect->deleteLater( );
+		// 减少请求次数
+		repeatRequestCount = repeatRequestCount - 1;
+	}
+	return networkReply;
+}
 size_t Request::sleep( const size_t &milliseconds ) {
 	if( milliseconds == 0 )
 		return milliseconds;
 	auto point = std::chrono::system_clock::now( );
 	auto timeSinceEpoch = point.time_since_epoch( );
-	auto timePoint = std::chrono::duration_cast< std::chrono::milliseconds >( timeSinceEpoch ).count( );
+	auto timePoint = NetworkRequest::getTimeDurationToMilliseconds( timeSinceEpoch );
 	do {
 		point = std::chrono::system_clock::now( );
 		timeSinceEpoch = point.time_since_epoch( );
-		auto nowPoint = std::chrono::duration_cast< std::chrono::milliseconds >( timeSinceEpoch ).count( );
+		auto nowPoint = NetworkRequest::getTimeDurationToMilliseconds( timeSinceEpoch );
 		auto duration = nowPoint - timePoint;
 		if( duration > milliseconds )
 			break;
@@ -32,7 +100,8 @@ size_t Request::sleep( const size_t &milliseconds ) {
 
 Request::Request( NetworkAccessManager *networkAccessManager, RequestConnect *requestConnect, QObject *parent, Qt::ConnectionType connection_type ) : networkAccessManager( networkAccessManager )
 , QObject( parent )
-, requestConnect( requestConnect ) {
+, requestConnect( requestConnect )
+, networkRequest( nullptr ) {
 	requestConnect->setNetworkAccessManager( networkAccessManager, connection_type );
 }
 
@@ -74,6 +143,7 @@ int32_t Request::netGetWork( const NetworkRequest &network_request, size_t milli
 		if( timeDurationToMilliseconds >= 0 && timeDurationToMilliseconds < milliseconds )
 			sleep( milliseconds - timeDurationToMilliseconds );
 	}
+	networkRequest = std::make_shared< NetworkRequest >( network_request );
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
 	auto resultCode = 0;
 	if( !requestConnect->setNetworkReply( networkReply, connect_type ) )
@@ -92,6 +162,21 @@ QNetworkReply * Request::waitFinish( const size_t &milliseconds ) {
 	}
 	return nullptr;
 }
+QNetworkReply * Request::getNetworkReply( const size_t &milliseconds ) {
+	QNetworkReply *networkReply = waitFinish( milliseconds );
+	if( networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
+		auto newRequestConnect = new RequestConnect;
+		Request *request = new Request( this->networkAccessManager, newRequestConnect );
+		// 请求
+		request->netGetWork( networkReply->url( ), *this->networkRequest );
+		// 等待，阻塞
+		networkReply = request->getNetworkReply( milliseconds );
+		// 释放请求
+		request->deleteLater( );
+		newRequestConnect->deleteLater( );
+	}
+	return networkReply;
+}
 int32_t Request::netGetWork( const NetworkRequest &network_request, Qt::ConnectionType connect_type ) {
 	if( !requestConnect->setNetworkAccessManager( networkAccessManager, connect_type ) )
 		return -1;
@@ -107,7 +192,7 @@ int32_t Request::netGetWork( const NetworkRequest &network_request, Qt::Connecti
 		if( timeDurationToMilliseconds >= 0 && timeDurationToMilliseconds < milliseconds )
 			sleep( milliseconds - timeDurationToMilliseconds );
 	}
-
+	networkRequest = std::make_shared< NetworkRequest >( network_request );
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
 	auto resultCode = 0;
 	if( !requestConnect->setNetworkReply( networkReply, connect_type ) )

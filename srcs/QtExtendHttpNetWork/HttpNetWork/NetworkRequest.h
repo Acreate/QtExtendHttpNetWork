@@ -52,13 +52,24 @@ namespace cylHttpNetWork {
 		/// 获取当前时间的时间戳
 		/// </summary>
 		/// <returns></returns>
-		static NetworkRequest::Time_Duration getNowTimeDuration( );
+		static NetworkRequest::Time_Duration getNowTimeDuration( ) {
+			return std::chrono::system_clock::now( ).time_since_epoch( );
+		}
+		/// <summary>
+		/// 获取当前时间戳
+		/// </summary>
+		/// <returns>返回时间戳</returns>
+		static _CHRONO time_point< std::chrono::system_clock > getCurrentTime( ) {
+			return std::chrono::system_clock::now( );
+		}
 		/// <summary>
 		/// 时间戳转换到毫秒
 		/// </summary>
 		/// <param name="time_duration">时间戳</param>
 		/// <returns>毫秒</returns>
-		static long long getTimeDurationToMilliseconds(const NetworkRequest::Time_Duration& time_duration);
+		static long long getTimeDurationToMilliseconds( const NetworkRequest::Time_Duration &time_duration ) {
+			return std::chrono::duration_cast< std::chrono::milliseconds >( time_duration ).count( );
+		}
 		/// <summary>
 		/// 获取域请求时间
 		/// </summary>
@@ -76,7 +87,9 @@ namespace cylHttpNetWork {
 		/// 设置当前时间到域时间请求上
 		/// </summary>
 		/// <param name="q_url">设置的域</param>
-		static void updateCurrentTimeToHostLastRequestTime( const QUrl &q_url );
+		static void updateCurrentTimeToHostLastRequestTime( const QUrl &q_url ) {
+			setHostLastRequestTime( q_url, std::chrono::system_clock::now( ).time_since_epoch( ) );
+		}
 		/// <summary>
 		/// 获取已经库存的 UserAgentHeader
 		/// </summary>
