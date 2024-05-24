@@ -71,7 +71,23 @@ namespace cylHttpNetWork {
 		/// <param name="microseconds">等待毫秒</param>
 		/// <param name="connect_type">信号链接类型</param>
 		/// <returns>执行编码，非0表示失败</returns>
-		int32_t netGetWork(const NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+		int32_t netGetWork( const NetworkRequest &network_request, size_t microseconds, Qt::ConnectionType connect_type = Qt::AutoConnection );
+
+		/// <summary>
+		/// 等待完成
+		/// </summary>
+		/// <param name="milliseconds">等待间隔</param>
+		/// <returns>请求完成体</returns>
+		QNetworkReply * waitFinish( const size_t &milliseconds = 100 );
+		/// <summary>
+		/// <see cref="Request::waitFinish"/>
+		/// 获取 请求完成体
+		/// </summary>
+		/// <param name="milliseconds">等待间隔</param>
+		/// <returns>请求完成体</returns>
+		QNetworkReply * getNetworkReply( const size_t &milliseconds = 100 ) {
+			return waitFinish( milliseconds );
+		}
 	public: // - 静态对象
 		/// <summary>
 		/// 睡眠指定的时间-毫秒

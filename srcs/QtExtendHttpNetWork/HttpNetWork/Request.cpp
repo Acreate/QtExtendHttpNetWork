@@ -75,10 +75,22 @@ int32_t Request::netGetWork( const NetworkRequest &network_request, size_t milli
 			sleep( milliseconds - timeDurationToMilliseconds );
 	}
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
-	if( requestConnect->setNetworkReply( networkReply, connect_type ) )
-		return -2;
+	auto resultCode = 0;
+	if( !requestConnect->setNetworkReply( networkReply, connect_type ) )
+		resultCode = -2;
 	cylHttpNetWork::NetworkRequest::updateCurrentTimeToHostLastRequestTime( qUrl );
-	return 0;
+	return resultCode;
+}
+QNetworkReply * Request::waitFinish( const size_t &milliseconds ) {
+	if( requestConnect ) {
+		auto networkReply = requestConnect->getNetworkReply( );
+		if( networkReply && networkReply->isRunning( ) ) {
+			while( !networkReply->isFinished( ) )
+				sleep( milliseconds );
+			return networkReply;
+		}
+	}
+	return nullptr;
 }
 int32_t Request::netGetWork( const NetworkRequest &network_request, Qt::ConnectionType connect_type ) {
 	if( !requestConnect->setNetworkAccessManager( networkAccessManager, connect_type ) )
@@ -97,8 +109,9 @@ int32_t Request::netGetWork( const NetworkRequest &network_request, Qt::Connecti
 	}
 
 	QNetworkReply *networkReply = networkAccessManager->get( network_request );
+	auto resultCode = 0;
 	if( !requestConnect->setNetworkReply( networkReply, connect_type ) )
-		return -2;
+		resultCode = -2;
 	cylHttpNetWork::NetworkRequest::updateCurrentTimeToHostLastRequestTime( qUrl );
-	return 0;
+	return resultCode;
 }

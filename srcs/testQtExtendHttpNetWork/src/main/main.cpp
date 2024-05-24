@@ -20,7 +20,7 @@ void testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QU
 	} );
 	// 开始请求
 	int32_t netGetWorkResultCode = request->netGetWork( qUrl );
-	qDebug() << "run code : "  << netGetWorkResultCode;
+	qDebug( ) << "testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QUrl qUrl ) - run code : " << netGetWorkResultCode;
 }
 void testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QUrl qUrl, size_t mill ) {
 	// 请求信号转发对象
@@ -37,8 +37,25 @@ void testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QU
 		request->deleteLater( );
 	} );
 	// 开始请求，但是使用自定义的时间，而并非已经定义的时间间隔
-	int32_t netGetWorkResultCode = request->netGetWork( qUrl , mill);
-	qDebug() << "run code : "  << netGetWorkResultCode;
+	int32_t netGetWorkResultCode = request->netGetWork( qUrl, mill );
+	qDebug( ) << "testRequest( cylHttpNetWork::NetworkAccessManager &networkAccessManager, QUrl qUrl, size_t mill ) - run code : " << netGetWorkResultCode;
+}
+void testRequestWaiteFinish( cylHttpNetWork::NetworkAccessManager &network_access_manager, const QUrl &url ) {
+	// 请求信号转发对象
+	cylHttpNetWork::RequestConnect *requestConnect = new cylHttpNetWork::RequestConnect;
+	// 请求发送
+	cylHttpNetWork::Request *request = new cylHttpNetWork::Request( &network_access_manager, requestConnect );
+	auto time = std::chrono::system_clock::now( ).time_since_epoch( );
+	// 开始请求，但是使用自定义的时间，而并非已经定义的时间间隔
+	int32_t netGetWorkResultCode = request->netGetWork( url );
+	auto waitFinish = request->waitFinish( );
+	auto subTime = time - std::chrono::system_clock::now( ).time_since_epoch( );
+	auto timeCount = std::chrono::duration_cast< std::chrono::milliseconds >( subTime ).count( );
+	QByteArray byteArray = waitFinish->readAll( );
+	qDebug( ) << "over : " << timeCount << "\t" << request << "\n" << byteArray.mid( 0, 50 ) << "\n";
+	requestConnect->deleteLater( );
+	request->deleteLater( );
+	qDebug( ) << "testRequestWaiteFinish( cylHttpNetWork::NetworkAccessManager &network_access_manager, const QUrl &url ) - run code : " << netGetWorkResultCode;
 }
 int main( int argc, char *argv[ ] ) {
 	QApplication app( argc, argv );
@@ -63,6 +80,8 @@ int main( int argc, char *argv[ ] ) {
 	testRequest( networkAccessManager, qUrl );
 	// 使用请求等待时间-但是自定义
 	testRequest( networkAccessManager, qUrl, 8000 );
+	// 使用请求等待完成
+	testRequestWaiteFinish( networkAccessManager, qUrl );
 	qDebug( ) << "\n\n\n\n=============\n" << "int main( int argc, char *argv[ ] ) ";
 	qDebug( ) << "return app.exec( );";
 	return app.exec( );
