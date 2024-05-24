@@ -38,7 +38,7 @@ QNetworkReply * Request::getNetworkReplyMilliseconds( size_t &request_millisecon
 
 	return networkReply;
 }
-QNetworkReply * Request::getNetworkReply( size_t &request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds ) {
+QNetworkReply * Request::getNetworkReply( size_t request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds );
 	if( networkReply->error( ) == QNetworkReply::NoError )
 		return networkReply; // 没有发生错误
@@ -151,7 +151,7 @@ int32_t Request::netGetWork( const NetworkRequest &network_request, size_t milli
 	cylHttpNetWork::NetworkRequest::updateCurrentTimeToHostLastRequestTime( qUrl );
 	return resultCode;
 }
-QNetworkReply * Request::waitFinish( const size_t &milliseconds ) {
+QNetworkReply * Request::waitFinish( size_t milliseconds ) {
 	if( requestConnect ) {
 		auto networkReply = requestConnect->getNetworkReply( );
 		if( networkReply && networkReply->isRunning( ) ) {
@@ -162,7 +162,7 @@ QNetworkReply * Request::waitFinish( const size_t &milliseconds ) {
 	}
 	return nullptr;
 }
-QNetworkReply * Request::getNetworkReply( const size_t &milliseconds ) {
+QNetworkReply * Request::getNetworkReply( size_t milliseconds ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds );
 	if( networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
 		auto newRequestConnect = new RequestConnect;

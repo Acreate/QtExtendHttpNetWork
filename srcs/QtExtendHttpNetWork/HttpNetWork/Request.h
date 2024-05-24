@@ -80,7 +80,7 @@ namespace cylHttpNetWork {
 		/// </summary>
 		/// <param name="milliseconds">等待间隔</param>
 		/// <returns>请求完成体</returns>
-		QNetworkReply * waitFinish( const size_t &milliseconds );
+		QNetworkReply * waitFinish( size_t milliseconds );
 		/// <summary>
 		/// 获取 请求完成体 <br/>
 		/// 获取失败，它会重新反复请求 <br/>
@@ -88,7 +88,7 @@ namespace cylHttpNetWork {
 		/// </summary>
 		/// <param name="milliseconds">等待间隔</param>
 		/// <returns>请求完成体</returns>
-		QNetworkReply * getNetworkReply( const size_t &milliseconds = 200 );
+		QNetworkReply * getNetworkReply( size_t milliseconds = 200 );
 		/// <summary>
 		/// 计数并且获取 请求完成体 <br/>
 		/// 计数为 0 时候，不再发生请求 <br/>
@@ -118,7 +118,7 @@ namespace cylHttpNetWork {
 		/// <param name="repeatRequestCount"></param>
 		/// <param name="milliseconds"></param>
 		/// <returns></returns>
-		QNetworkReply * getNetworkReply( size_t &request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds );
+		QNetworkReply * getNetworkReply( size_t request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds );
 	public: // - 静态对象
 		/// <summary>
 		/// 睡眠指定的时间-毫秒
