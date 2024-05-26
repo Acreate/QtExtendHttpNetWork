@@ -48,7 +48,7 @@ void testRequestWaiteFinish( cylHttpNetWork::NetworkAccessManager &network_acces
 	auto time = std::chrono::system_clock::now( ).time_since_epoch( );
 	// 开始请求，但是使用自定义的时间，而并非已经定义的时间间隔
 	int32_t netGetWorkResultCode = request->netGetWork( url );
-	auto waitFinish = request->waitFinish( );
+	auto waitFinish = request->waitFinish( 200 );
 	auto subTime = time - std::chrono::system_clock::now( ).time_since_epoch( );
 	auto timeCount = std::chrono::duration_cast< std::chrono::milliseconds >( subTime ).count( );
 	QByteArray byteArray = waitFinish->readAll( );
