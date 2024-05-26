@@ -27,15 +27,9 @@ QNetworkReply * Request::getNetworkReplyMilliseconds( size_t &request_millisecon
 		if( sepMillisecondsTime > request_milliseconds )
 			break; // 间隔大于设置的时间，则退出请求
 		// 重新请求
-		auto newRequestConnect = new RequestConnect;
-		this->requestConnect->deleteLater( );
-		this->requestConnect = newRequestConnect;
-		requestConnect->setNetworkAccessManager( networkAccessManager, this->connectType );
-		Request *request = new Request( this->networkAccessManager, newRequestConnect );
-		request->netGetWork( qUrl, *this->networkRequest );
+		netGetWork( qUrl, *this->networkRequest );
 		// 阻塞，等待完成
-		networkReply = request->waitFinish( milliseconds );
-		request->deleteLater( );
+		networkReply = waitFinish( milliseconds );
 	} while( true );
 
 	return networkReply;
@@ -53,15 +47,9 @@ QNetworkReply * Request::getNetworkReply( size_t request_milliseconds, size_t re
 		if( sepMillisecondsTime > request_milliseconds )
 			break; // 间隔大于设置的时间，则退出请求
 		// 重新请求
-		auto newRequestConnect = new RequestConnect;
-		this->requestConnect->deleteLater( );
-		this->requestConnect = newRequestConnect;
-		requestConnect->setNetworkAccessManager( networkAccessManager, this->connectType );
-		Request *request = new Request( this->networkAccessManager, newRequestConnect );
-		request->netGetWork( qUrl, *this->networkRequest );
+		netGetWork( qUrl, *this->networkRequest );
 		// 阻塞，等待完成
-		networkReply = request->waitFinish( milliseconds );
-		request->deleteLater( );
+		networkReply = waitFinish( milliseconds );
 		--repeatRequestCount;
 	};
 
@@ -70,17 +58,10 @@ QNetworkReply * Request::getNetworkReply( size_t request_milliseconds, size_t re
 QNetworkReply * Request::getNetworkReplyCount( size_t repeatRequestCount, const size_t &milliseconds ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds );
 	while( repeatRequestCount != 0 && networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
-		auto newRequestConnect = new RequestConnect;
-		this->requestConnect->deleteLater( );
-		this->requestConnect = newRequestConnect;
-		requestConnect->setNetworkAccessManager( networkAccessManager, this->connectType );
-		Request *request = new Request( this->networkAccessManager, newRequestConnect );
 		// 请求
-		request->netGetWork( networkReply->url( ), *this->networkRequest );
+		netGetWork( networkReply->url( ), *this->networkRequest );
 		// 等待，阻塞
-		networkReply = request->waitFinish( milliseconds );
-		// 释放请求
-		request->deleteLater( );
+		networkReply = waitFinish( milliseconds );
 		// 减少请求次数
 		repeatRequestCount = repeatRequestCount - 1;
 	}
@@ -89,17 +70,10 @@ QNetworkReply * Request::getNetworkReplyCount( size_t repeatRequestCount, const 
 QNetworkReply * Request::getNetworkReply( size_t milliseconds ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds );
 	if( networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
-		auto newRequestConnect = new RequestConnect;
-		this->requestConnect->deleteLater( );
-		this->requestConnect = newRequestConnect;
-		requestConnect->setNetworkAccessManager( networkAccessManager, this->connectType );
-		Request *request = new Request( this->networkAccessManager, newRequestConnect );
 		// 请求
-		request->netGetWork( networkReply->url( ), *this->networkRequest );
+		netGetWork( networkReply->url( ), *this->networkRequest );
 		// 等待，阻塞
-		networkReply = request->getNetworkReply( milliseconds );
-		// 释放请求
-		request->deleteLater( );
+		networkReply = getNetworkReply( milliseconds );
 	}
 	return networkReply;
 }
