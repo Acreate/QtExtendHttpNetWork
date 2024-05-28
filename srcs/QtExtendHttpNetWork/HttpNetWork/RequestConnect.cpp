@@ -13,8 +13,6 @@ bool RequestConnect::setNetworkAccessManager( NetworkAccessManager *networkAcces
 	if( this->networkAccessManager )
 		if( this->networkAccessManager == networkAccessManager )
 			return true;
-		else
-			return false;
 	this->connectType = connect_type;
 	this->networkAccessManager = networkAccessManager;
 	connect( networkAccessManager, &QNetworkAccessManager::authenticationRequired,
@@ -35,9 +33,6 @@ bool RequestConnect::setNetworkReply( QNetworkReply *networkReply, Qt::Connectio
 	if( this->networkReply )
 		if( this->networkReply == networkReply )
 			return true;
-		else
-			return false;
-
 	this->networkReply = networkReply;
 	connect( this, &RequestConnect::networkReplyMetaDataFinished, [=]( ) {
 		emit networkReplyFinished( this );
