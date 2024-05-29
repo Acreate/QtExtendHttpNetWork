@@ -1,11 +1,12 @@
 ﻿#include "NetworkRequest.h"
 #include <QObject>
+
 using namespace cylHttpNetWork;
 QStringList NetworkRequest::userAgentHeaders;
 size_t NetworkRequest::defaultHostRequestIntervalMilliseconds;
 QMap< QUrl, size_t > NetworkRequest::hostRequestInterval;
 QMutex *NetworkRequest::mutex = nullptr;
-QMap< QUrl, NetworkRequest::Time_Duration > NetworkRequest::urlTimeMap;
+QMap< QUrl, TimeTools::Time_Duration > NetworkRequest::urlTimeMap;
 void NetworkRequest::initTools( ) {
 	if( mutex )
 		return;
@@ -42,7 +43,7 @@ size_t NetworkRequest::getHostUrlRequestInterval( const QUrl &q_url ) {
 }
 
 
-bool NetworkRequest::getHostLastRequestTime( const QUrl &q_url, NetworkRequest::Time_Duration &result ) {
+bool NetworkRequest::getHostLastRequestTime( const QUrl &q_url, TimeTools::Time_Duration &result ) {
 	QMutexLocker< QMutex > locker( mutex );
 	auto iterator = urlTimeMap.begin( );
 	auto end = urlTimeMap.end( );
@@ -53,7 +54,7 @@ bool NetworkRequest::getHostLastRequestTime( const QUrl &q_url, NetworkRequest::
 		}
 	return false;
 }
-void NetworkRequest::setHostLastRequestTime( const QUrl &q_url, const Time_Duration &time_duration ) {
+void NetworkRequest::setHostLastRequestTime( const QUrl &q_url, const TimeTools::Time_Duration &time_duration ) {
 	QMutexLocker< QMutex > locker( mutex );
 	auto iterator = urlTimeMap.begin( );
 	auto end = urlTimeMap.end( );

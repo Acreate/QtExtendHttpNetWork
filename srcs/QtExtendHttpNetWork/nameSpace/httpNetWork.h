@@ -7,6 +7,7 @@ namespace cylHttpNetWork {
 	class QTEXTENDHTTPNETWORK_EXPORT NetworkRequest;
 	class QTEXTENDHTTPNETWORK_EXPORT Request;
 	class QTEXTENDHTTPNETWORK_EXPORT RequestConnect;
+	class QTEXTENDHTTPNETWORK_EXPORT TimeTools;
 }
 
 #endif // HTTPNETWORK_H_H_HEAD__FILE__
