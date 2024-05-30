@@ -36,7 +36,7 @@ QNetworkReply * Request::getNetworkReplyMilliseconds( size_t &request_millisecon
 	return networkReply;
 }
 
-QNetworkReply * cylHttpNetWork::Request::getNetworkReplyMilliseconds( size_t &request_milliseconds, const size_t &milliseconds, const std::function< qsizetype( RequestConnect * ) > &function ) {
+QNetworkReply * cylHttpNetWork::Request::getNetworkReplyMilliseconds( size_t &request_milliseconds, const size_t &milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds, function );
 	if( networkReply->error( ) == QNetworkReply::NoError )
 		return networkReply; // 没有发生错误
@@ -50,7 +50,7 @@ QNetworkReply * cylHttpNetWork::Request::getNetworkReplyMilliseconds( size_t &re
 		long long sepMillisecondsTime = TimeTools::getTimeDurationToMilliseconds( TimeTools::getNowTimeDuration( ) ) - startGetNetworkReplyCallFunctionTime;
 		if( sepMillisecondsTime > request_milliseconds )
 			break; // 间隔大于设置的时间，则退出请求
-		if( function( this->requestConnect ) == 0 )
+		if( function( this->requestConnect, this->networkRequest.get( ) ) == 0 )
 			return this->requestConnect->getNetworkReply( );
 		// 重新请求
 		netGetWork( qUrl, *this->networkRequest );
@@ -83,7 +83,7 @@ QNetworkReply * Request::getNetworkReply( size_t request_milliseconds, size_t re
 	return networkReply;
 }
 
-QNetworkReply * cylHttpNetWork::Request::getNetworkReply( size_t request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect * ) > &function ) {
+QNetworkReply * cylHttpNetWork::Request::getNetworkReply( size_t request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds, function );
 	if( networkReply->error( ) == QNetworkReply::NoError )
 		return networkReply; // 没有发生错误
@@ -95,7 +95,7 @@ QNetworkReply * cylHttpNetWork::Request::getNetworkReply( size_t request_millise
 		long long sepMillisecondsTime = TimeTools::getTimeDurationToMilliseconds( TimeTools::getNowTimeDuration( ) ) - startGetNetworkReplyCallFunctionTime;
 		if( sepMillisecondsTime > request_milliseconds )
 			break; // 间隔大于设置的时间，则退出请求
-		if( function( this->requestConnect ) == 0 )
+		if( function( this->requestConnect, this->networkRequest.get( ) ) == 0 )
 			return this->requestConnect->getNetworkReply( );
 		// 重新请求
 		netGetWork( qUrl, *this->networkRequest );
@@ -119,10 +119,10 @@ QNetworkReply * Request::getNetworkReplyCount( size_t repeatRequestCount, const 
 	}
 	return networkReply;
 }
-QNetworkReply * Request::getNetworkReplyCount( size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect * ) > &function ) {
+QNetworkReply * Request::getNetworkReplyCount( size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds, function );
 	while( repeatRequestCount != 0 && networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
-		if( function( this->requestConnect ) == 0 )
+		if( function( this->requestConnect, this->networkRequest.get( ) ) == 0 )
 			return this->requestConnect->getNetworkReply( );
 		// 请求
 		netGetWork( networkReply->url( ), *this->networkRequest );
@@ -144,10 +144,10 @@ QNetworkReply * Request::getNetworkReply( size_t milliseconds ) {
 	}
 	return networkReply;
 }
-QNetworkReply * Request::getNetworkReply( size_t milliseconds, const std::function< qsizetype( RequestConnect * ) > &function ) {
+QNetworkReply * Request::getNetworkReply( size_t milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function ) {
 	QNetworkReply *networkReply = waitFinish( milliseconds, function );
 	if( networkReply == nullptr || networkReply->error( ) != QNetworkReply::NoError ) { // 如果发生错误，并且需要重新请求
-		if( function( this->requestConnect ) == 0 )
+		if( function( this->requestConnect, this->networkRequest.get( ) ) == 0 )
 			return this->requestConnect->getNetworkReply( );
 		// 请求
 		netGetWork( networkReply->url( ), *this->networkRequest );
@@ -236,7 +236,7 @@ QNetworkReply * Request::waitFinish( size_t milliseconds ) {
 	}
 	return nullptr;
 }
-QNetworkReply * Request::waitFinish( size_t milliseconds, const std::function< qsizetype( RequestConnect * ) > &function ) {
+QNetworkReply * Request::waitFinish( size_t milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function ) {
 	if( requestConnect ) {
 		auto networkReply = requestConnect->getNetworkReply( );
 		if( !networkReply )
@@ -247,7 +247,7 @@ QNetworkReply * Request::waitFinish( size_t milliseconds, const std::function< q
 				auto newTimePoint = TimeTools::getTimeDurationToMilliseconds( TimeTools::getNowTimeDuration( ) - timePoint );
 				if( newTimePoint > milliseconds ) {
 					timePoint = TimeTools::getNowTimeDuration( );
-					if( function( requestConnect ) == 0 )
+					if( function( requestConnect, this->networkRequest.get( ) ) == 0 )
 						return requestConnect->getNetworkReply( );
 				}
 				qApp->processEvents( );

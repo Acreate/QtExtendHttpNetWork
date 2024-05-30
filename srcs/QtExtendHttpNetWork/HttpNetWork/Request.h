@@ -91,7 +91,7 @@ namespace cylHttpNetWork {
 		/// <param name="milliseconds">等待间隔</param>
 		/// <param name="function">当仍然在继续执行任务时，一直调用该函数，直到返回 0，或者成功获取</param>
 		/// <returns>请求完成体</returns>
-		QNetworkReply * waitFinish( size_t milliseconds, const std::function< qsizetype( RequestConnect * ) > &function );
+		QNetworkReply * waitFinish( size_t milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function );
 		/// <summary>
 		/// 获取 请求完成体 <br/>
 		/// 获取失败，它会重新反复请求 <br/>
@@ -108,7 +108,7 @@ namespace cylHttpNetWork {
 		/// <param name="milliseconds">等待间隔</param>
 		/// <param name="function">当仍然在继续执行任务时，一直调用该函数，直到返回 0，或者成功获取</param>
 		/// <returns>请求完成体</returns>
-		QNetworkReply * getNetworkReply( size_t milliseconds, const std::function< qsizetype( RequestConnect * ) > &function );
+		QNetworkReply * getNetworkReply( size_t milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function );
 		/// <summary>
 		/// 计数并且获取 请求完成体 <br/>
 		/// 计数为 0 时候，不再发生请求 <br/>
@@ -127,7 +127,7 @@ namespace cylHttpNetWork {
 		/// <param name="function">当仍然在继续执行任务时，一直调用该函数，直到返回 0，或者成功获取</param>
 		/// <param name="milliseconds">等待间隔</param>
 		/// <returns>请求完成体</returns>
-		QNetworkReply * getNetworkReplyCount( size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect * ) > &function );
+		QNetworkReply * getNetworkReplyCount( size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function );
 		/// <summary>
 		/// 计时并且获取 请求完成体 <br/>
 		/// 发生请求错误时，自动重新请求 <br/>
@@ -146,7 +146,7 @@ namespace cylHttpNetWork {
 		/// <param name="milliseconds">等待间隔</param>
 		/// <param name="function">当仍然在继续执行任务时，一直调用该函数，直到返回 0，或者成功获取</param>
 		/// <returns>请求完成体</returns>
-		QNetworkReply * getNetworkReplyMilliseconds( size_t &request_milliseconds, const size_t &milliseconds, const std::function< qsizetype( RequestConnect * ) > &function );
+		QNetworkReply * getNetworkReplyMilliseconds( size_t &request_milliseconds, const size_t &milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest * ) > &function );
 		/// <summary>
 		/// 获取请求完成体  <br/>
 		/// 使用计时与计数限制请求功能 <br/>
@@ -171,7 +171,7 @@ namespace cylHttpNetWork {
 		/// <param name="milliseconds">等待时间</param>
 		/// <param name="function">当仍然在继续执行任务时，一直调用该函数，直到返回 0，或者成功获取</param>
 		/// <returns></returns>
-		QNetworkReply * getNetworkReply( size_t request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds , const std::function< qsizetype( RequestConnect * ) > &function );
+		QNetworkReply * getNetworkReply( size_t request_milliseconds, size_t repeatRequestCount, const size_t &milliseconds, const std::function< qsizetype( RequestConnect *, NetworkRequest *network_request ) > &function );
 	public: // - 静态对象
 		/// <summary>
 		/// 睡眠指定的时间-毫秒
